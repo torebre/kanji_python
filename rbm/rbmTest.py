@@ -13,37 +13,59 @@ numberOfHiddenUnits = 50
 rbmWeights = np.random.random_sample((numberOfHiddenUnits, inputs.shape[0])).astype("float32")
 
 
-inputsConstant = tf.placeholder(dtype="float32", shape = inputs.shape)
+inputsConstant = tf.placeholder(dtype="float32", shape = inputs.shape, name="inputs")
 weights = tf.Variable(initial_value=rbmWeights, name="weights")
 
-outputTensor = cd1(inputs, rbmWeights)
+# outputTensor = cd1(inputs, rbmWeights)
 
 
 # weightSummary = tf.summary.image("weights", weights)
-weightSummary = tf.summary.image('input', tf.reshape(rbmWeights, [-1, 16, 16, 1]), 1)
+weightSummary = tf.summary.image('input', tf.reshape(weights, [-1, 16, 16, 1]), 1)
 
 writer = tf.summary.FileWriter("./logs")
 
 learningRate = 0.9
 
-model = np.random.random_sample(modelShape)
-momentumSpeed = np.zeros(modelShape)
+momentumSpeed = tf.Variable(np.random.random_sample(weights.shape).astype("float32"), dtype="float32")
 miniBatchSize = 100
-startOfNextMiniBatch = 1
+startOfNextMiniBatch = 0
+
+
+
+miniBatch = tf.placeholder(dtype="float32", shape = [inputs.shape[0], miniBatchSize], name="miniBatch")
+gradient = cd1(miniBatch, weights)
+# gradient = tf.placeholder(dtype="float32", shape = rbmWeights.shape, name="gradient")
+
+momentumSpeedUpdate = tf.add(tf.multiply(tf.constant(0.9, dtype="float32"), momentumSpeed), gradient)
+modelUpdate = tf.add(rbmWeights, tf.multiply(momentumSpeedUpdate, tf.constant(0.9, dtype="float32")))
 
 with tf.Session() as sess:
-    for i in range(1000):
-        miniBatch = inputs[:, startOfNextMiniBatch: (startOfNextMiniBatch + miniBatchSize - 1)]
+    momentumSpeed.initializer.run()
+    weights.initializer.run()
+
+    for i in range(10000):
+        miniBatchValues = inputs[:, startOfNextMiniBatch: (startOfNextMiniBatch + miniBatchSize)]
+
         startOfNextMiniBatch = np.mod(startOfNextMiniBatch + miniBatchSize, inputs.shape[1])
-        gradient = cd1(model, miniBatch)
-        momentumSpeed = 0.9 * momentumSpeed + gradient
-        model = model + momentumSpeed * learningRate
 
+        # gradient = sess.run(gradientComputation, feed_dict={miniBatch: miniBatchValues})
+        # sess.run([gradient, momentumSpeedUpdate], feed_dict={miniBatch: miniBatchValues})
+        momentumSpeed, weights= sess.run([momentumSpeedUpdate, modelUpdate], feed_dict={miniBatch: miniBatchValues})
 
+        print("weights sample: ", weights[10, 10])
 
-        result, summary_str= sess.run([outputTensor, weightSummary], feed_dict={weights: rbmWeights})
+        summary_str = sess.run(weightSummary)
+
+        # momentumSpeed = sess.run(momentumSpeedUpdate)
+        # weights = learnedWeights
+
+        # _, _, summary_str = sess.run([momentumSpeedUpdate, modelUpdate, weightSummary], feed_dict={miniBatch: miniBatchValues})
+
         writer.add_summary(summary_str, i)
 
-        print("i: ", i, ". Result: ", result)
+        # momentumSpeed = 0.9 * momentumSpeed + gradient
+        # model = model + momentumSpeed * learningRate
+
+        # print("i: ", i, "weights: ", weights)
 
 
