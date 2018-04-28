@@ -1,5 +1,6 @@
 import tensorflow as tf
 
+
 # This is the gradient function
 def cd1(inputs, rbm_weights):
     visible_data_sampled = tf.cast(tf.greater_equal(inputs, tf.random_uniform(inputs.shape)), "float32")
@@ -19,7 +20,7 @@ def cd1(inputs, rbm_weights):
 
     # hidden_probabilities = visible_state_to_hidden_probabilities(rbm_w, visible_data);
 
-    hidden_states = tf.cast(tf.greater_equal(hidden_probabilities,  tf.random_uniform(hidden_probabilities.shape)), "float32")
+    hidden_states = tf.cast(tf.greater_equal(hidden_probabilities, tf.random_uniform(hidden_probabilities.shape)), "float32")
 
     # hidden_states = sample_bernoulli(hidden_probabilities);
 
