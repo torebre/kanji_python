@@ -19,15 +19,6 @@ inputs = dataSet["data"]["training"][0, 0]["inputs"][0, 0].astype(numberType)
 initialWeights = ((np.random.random_sample((numberOfHiddenUnits, inputs.shape[0])) * 2 - 1) * 0.).astype(numberType)
 weights = tf.Variable(initial_value=initialWeights, name="weights")
 
-
-# tf.summary.histogram('weights', weights)
-
-# for i in range(numberOfHiddenUnits):
-#     tf.summary.image('weights' + str(i), tf.reshape(weights[i, :], [-1, 16, 16, 1]), 1)
-
-# weightSummary = tf.summary.image('weights1', tf.reshape(weights[0, :], [-1, 16, 16, 1]), 1)
-# weightSummary2 = tf.summary.image('weights2', tf.reshape(weights[1, :], [-1, 16, 16, 1]), 1)
-# weightSummary3 = tf.summary.image('weights3', tf.reshape(weights[2, :], [-1, 16, 16, 1]), 1)
 writer = tf.summary.FileWriter("../model_output/logs33")
 
 momentumSpeed = tf.Variable(np.zeros(weights.shape).astype(numberType), dtype=numberType)
