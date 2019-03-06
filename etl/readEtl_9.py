@@ -19,7 +19,7 @@ with open('/home/student/Downloads/ETL/ETL9B/ETL9B_2', mode = 'rb') as file:
             break
 
         (serialSheetNumber, kanjiCode, typicalReading, imageData, uncertain) = unpackFunction(record)
-        image = np.unpackbits(np.fromstring(imageData, dtype=np.uint8)).reshape(64, 63)
+        image = np.unpackbits(np.fromstring(imageData, dtype=np.uint8)).reshape((63, 64))
 
         images.append(Image.frombuffer('1', (64, 63), imageData, 'raw'))
 
