@@ -2,6 +2,9 @@ import struct
 import numpy as np
 from matplotlib import pylab as plt
 
+from skimage.morphology import skeletonize
+from skimage.transform import resize
+
 
 structFormat = 'hh4s504s64s'
 structLength = struct.calcsize(structFormat)
@@ -11,19 +14,18 @@ kanjiData = []
 
 
 with open('/home/student/Downloads/ETL/ETL9B/ETL9B_2', mode = 'rb') as file:
-    while True:
+    for i in range(1, 10):
         record = file.read(structLength)
-        if not record:
-            break
 
         (serialSheetNumber, kanjiCode, typicalReading, imageData, uncertain) = unpackFunction(record)
         image = np.unpackbits(np.fromstring(imageData, dtype=np.uint8)).reshape((63, 64))
-        # images.append(Image.frombuffer('1', (64, 63), imageData, 'raw'))
 
         kanjiData.append(tuple([serialSheetNumber, kanjiCode, typicalReading, image]))
 
 
-print "Kanji data length: ", len(kanjiData)
 
-for x in range(10000, 10050):
-    plt.imsave('../etl_sample_pictures/kanji_' + str(x) + '.png', kanjiData[x][3])
+
+for record in kanjiData:
+    skeletonizedImage = skeletonize(record[3])
+    resizedImage = resize(skeletonizedImage, (32, 32))
+    plt.imsave('../etl_sample_pictures/preprocessed_kanji_' + str(record[0]) + '_' + str(record[1]) + '.png', resizedImage)
