@@ -4,7 +4,7 @@ import tensorflow as tf
 # This is the gradient function
 def cd1(inputs, rbm_weights):
     # Start implementation of contrastive divergence with 1 step (CD1)
-    visible_data_sampled = tf.cast(tf.greater_equal(inputs, tf.random_uniform(rbm_weights.shape)), "float32")
+    visible_data_sampled = tf.cast(tf.greater_equal(inputs, tf.random_uniform(inputs.shape)), "float32")
 
     # Visible state to hidden probabilities
     ones = tf.constant(1, "float32", [rbm_weights.shape[0], visible_data_sampled.shape[1]])
@@ -29,4 +29,3 @@ def cd1(inputs, rbm_weights):
     term2 = tf.div(tf.matmul(hidden_probabilities2, tf.transpose(visible_states)), numberOfConfigurations)
 
     return tf.subtract(term1, term2)
-    # End implementation of CD1

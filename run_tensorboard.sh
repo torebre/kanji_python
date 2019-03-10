@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
 
-tensorboard --logdir=model_output/logs33
+tensorboard --logdir=model_output/logs34

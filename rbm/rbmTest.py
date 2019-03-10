@@ -16,10 +16,10 @@ numberType = "float32"
 
 inputs = dataSet["data"]["training"][0, 0]["inputs"][0, 0].astype(numberType)
 
-initialWeights = ((np.random.random_sample((numberOfHiddenUnits, inputs.shape[0])) * 2 - 1) * 0.).astype(numberType)
+initialWeights = ((np.random.random_sample((numberOfHiddenUnits, inputs.shape[0])) * 2 - 1) * 0.1).astype(numberType)
 weights = tf.Variable(initial_value=initialWeights, name="weights")
 
-writer = tf.summary.FileWriter("../model_output/logs33")
+writer = tf.summary.FileWriter("../model_output/logs35")
 
 momentumSpeed = tf.Variable(np.zeros(weights.shape).astype(numberType), dtype=numberType)
 startOfNextMiniBatch = 0
