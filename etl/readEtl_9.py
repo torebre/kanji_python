@@ -1,29 +1,30 @@
 import struct
 import numpy as np
-from matplotlib import pylab as plt
+
+STRUCT_FORMAT = 'hh4s504s64s'
+ETL_BASE_PATH = ['/home/student/Downloads/ETL/ETL9B/ETL9B_']
 
 
-structFormat = 'hh4s504s64s'
-structLength = struct.calcsize(structFormat)
-unpackFunction = struct.Struct(structFormat).unpack_from
+def readall():
+    structLength = struct.calcsize(STRUCT_FORMAT)
+    unpack_function = struct.Struct(STRUCT_FORMAT).unpack_from
 
-kanjiData = []
+    kanjiData = []
 
+    for i in range(1, 6):
+        with open('/home/student/Downloads/ETL/ETL9B/ETL9B_' +str(i), mode = 'rb') as file:
+            # The first record is a dummy record
+            file.read(structLength)
 
-with open('/home/student/Downloads/ETL/ETL9B/ETL9B_2', mode = 'rb') as file:
-    while True:
-        record = file.read(structLength)
-        if not record:
-            break
+            while True:
+                record = file.read(structLength)
 
-        (serialSheetNumber, kanjiCode, typicalReading, imageData, uncertain) = unpackFunction(record)
-        image = np.unpackbits(np.fromstring(imageData, dtype=np.uint8)).reshape((63, 64))
-        # images.append(Image.frombuffer('1', (64, 63), imageData, 'raw'))
+                if not record:
+                    break
 
-        kanjiData.append(tuple([serialSheetNumber, kanjiCode, typicalReading, image]))
+                (serialSheetNumber, kanjiCode, typicalReading, imageData, uncertain) = unpack_function(record)
+                image = np.unpackbits(np.fromstring(imageData, dtype=np.uint8)).reshape((63, 64))
 
+                kanjiData.append({'serialSheetNumber': serialSheetNumber, 'kanjiCode': kanjiCode, 'typicalReading': typicalReading, 'image': image})
 
-print "Kanji data length: ", len(kanjiData)
-
-for x in range(10000, 10050):
-    plt.imsave('../etl_sample_pictures/kanji_' + str(x) + '.png', kanjiData[x][3])
+    return kanjiData

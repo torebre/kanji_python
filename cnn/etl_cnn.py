@@ -74,7 +74,7 @@ model.add(Dense(counter, activation='softmax'))
 model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
 
 
-model.fit(xTrain, yTrain, validation_data=(xTest, yTest), epochs=3)
+model.fit(xTrain, yTrain, validation_data=(xTest, yTest), epochs=1)
 
 predictFirst = model.predict(xTest[:1])
 np.argmax(predictFirst)
@@ -91,3 +91,7 @@ output_graph_def = graph_util.convert_variables_to_constants(
 model_file = "./saved_model.pb"
 with tf.gfile.GFile(model_file, "wb") as f:
     f.write(output_graph_def.SerializeToString())
+
+
+
+print([k for k,v in classesMap.items() if v == 87])
